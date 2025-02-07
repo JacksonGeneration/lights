@@ -173,19 +173,26 @@
 
 
         async function updateBoxesWithLEDStatus() {
-            const status147 = await fetchLEDStatus(ip1);
-            const status148 = await fetchLEDStatus(ip2);
-        
-            boxes.forEach(box => {
-                const status = box.ip === ip1 ? status147 : status148;
-                if (status && status.strips && status.strips[box.strip]) {
-                    const ledStatus = status.strips[box.strip].leds[box.rangeStart];
-                    if (ledStatus) {
-                        box.color = { r: ledStatus.r, g: ledStatus.g, b: ledStatus.b };
-                        box.brightness = ledStatus.brightness;
+            try {
+                console.log('Fetching LED status...');
+                const status147 = await fetchLEDStatus(ip1);
+                const status148 = await fetchLEDStatus(ip2);
+                console.log('LED status fetched:', { status147, status148 });
+
+                boxes.forEach(box => {
+                    const status = box.ip === ip1 ? status147 : status148;
+                    if (status && status.strips && status.strips[box.strip]) {
+                        const ledStatus = status.strips[box.strip].leds[box.rangeStart];
+                        if (ledStatus) {
+                            box.color = { r: ledStatus.r, g: ledStatus.g, b: ledStatus.b };
+                            box.brightness = ledStatus.brightness;
+                        }
                     }
-                }
-            });
+                });
+            } catch (error) {
+                console.error('Error updating boxes with LED status:', error);
+                document.getElementById('status').textContent = `Error updating boxes: ${error.message}`;
+            }
         }
 
         async function createGrid() {
