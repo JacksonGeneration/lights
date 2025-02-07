@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOTO Boxes Control Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+        #status {
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 1200px; /* Adjust this value as needed */
+        }
+
+        .box {
+            aspect-ratio: 1;
+            background-color: #4CAF50;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            font-size: 14px; /* Adjust font size as needed */
+        }
+        .dropdown {
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 120px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            display: none;
+        }
+        .dropdown a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .dropdown a:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LOTO Boxes Control Panel</h1>
+        <div id="grid-container" class="grid-container"></div>
+        <pre id="status"></pre>
+    </div>
+
+    <script>
+        let baseUrl = 'http://10.10.190.';
+        const ip1 = 147;
+        const ip2 = 148;
+        const defaultColor = {r:0,g:0,b:0};
+        const defaultBrightness = 0;
+        const gridContainer = document.getElementById('grid-container');
+        const boxes = [
+            // Row 1 (Strip 0)
+            {number: 1, strip: 0, rangeStart: 0, rangeEnd: 17, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 2, strip: 0, rangeStart: 20, rangeEnd: 37, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 3, strip: 0, rangeStart: 40, rangeEnd: 57, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 4, strip: 0, rangeStart: 60, rangeEnd: 77, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 5, strip: 0, rangeStart: 80, rangeEnd: 97, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 6, strip: 0, rangeStart: 100, rangeEnd: 117, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 7, strip: 0, rangeStart: 120, rangeEnd: 137, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 8, strip: 0, rangeStart: 140, rangeEnd: 157, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 9, strip: 0, rangeStart: 160, rangeEnd: 177, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 10, strip: 0, rangeStart: 180, rangeEnd: 197, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 11, strip: 0, rangeStart: 200, rangeEnd: 217, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 12, strip: 0, rangeStart: 220, rangeEnd: 237, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+
+            // Row 2 (Strip 1)
+            {number: 13, strip: 1, rangeStart: 0, rangeEnd: 17, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 14, strip: 1, rangeStart: 20, rangeEnd: 37, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 15, strip: 1, rangeStart: 40, rangeEnd: 57, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 16, strip: 1, rangeStart: 60, rangeEnd: 77, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 17, strip: 1, rangeStart: 80, rangeEnd: 97, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 18, strip: 1, rangeStart: 100, rangeEnd: 117, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 19, strip: 1, rangeStart: 120, rangeEnd: 137, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 20, strip: 1, rangeStart: 140, rangeEnd: 157, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 21, strip: 1, rangeStart: 160, rangeEnd: 177, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 22, strip: 1, rangeStart: 180, rangeEnd: 197, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 23, strip: 1, rangeStart: 200, rangeEnd: 217, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 24, strip: 1, rangeStart: 220, rangeEnd: 237, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+
+            // Row 3 (Strip 2)
+            {number: 25, strip: 2, rangeStart: 0, rangeEnd: 17, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 26, strip: 2, rangeStart: 20, rangeEnd: 37, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 27, strip: 2, rangeStart: 40, rangeEnd: 57, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 28, strip: 2, rangeStart: 60, rangeEnd: 77, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 29, strip: 2, rangeStart: 80, rangeEnd: 97, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 30, strip: 2, rangeStart: 100, rangeEnd: 117, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 31, strip: 2, rangeStart: 120, rangeEnd: 137, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 32, strip: 2, rangeStart: 140, rangeEnd: 157, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 33, strip: 2, rangeStart: 160, rangeEnd: 177, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 34, strip: 2, rangeStart: 180, rangeEnd: 197, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 35, strip: 2, rangeStart: 200, rangeEnd: 217, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+            {number: 36, strip: 2, rangeStart: 220, rangeEnd: 237, color: defaultColor, brightness: defaultBrightness, ip:ip1},
+
+            // Row 4 (Strip 3)
+            {number: 37, strip: 0, rangeStart: 0, rangeEnd: 17, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 38, strip: 0, rangeStart: 20, rangeEnd: 37, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 39, strip: 0, rangeStart: 40, rangeEnd: 57, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 40, strip: 0, rangeStart: 60, rangeEnd: 77, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 41, strip: 0, rangeStart: 80, rangeEnd: 97, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 42, strip: 0, rangeStart: 100, rangeEnd: 117, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 43, strip: 0, rangeStart: 120, rangeEnd: 137, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 44, strip: 0, rangeStart: 140, rangeEnd: 157, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 45, strip: 0, rangeStart: 160, rangeEnd: 177, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 46, strip: 0, rangeStart: 180, rangeEnd: 197, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 47, strip: 0, rangeStart: 200, rangeEnd: 217, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 48, strip: 0, rangeStart: 220, rangeEnd: 237, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+
+            // Row 5 (Strip 4)
+            {number: 49, strip: 1, rangeStart: 0, rangeEnd: 17, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 50, strip: 1, rangeStart: 20, rangeEnd: 37, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 51, strip: 1, rangeStart: 40, rangeEnd: 57, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 52, strip: 1, rangeStart: 60, rangeEnd: 77, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 53, strip: 1, rangeStart: 80, rangeEnd: 97, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 54, strip: 1, rangeStart: 100, rangeEnd: 117, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 55, strip: 1, rangeStart: 120, rangeEnd: 137, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 56, strip: 1, rangeStart: 140, rangeEnd: 157, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 57, strip: 1, rangeStart: 160, rangeEnd: 177, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 58, strip: 1, rangeStart: 180, rangeEnd: 197, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 59, strip: 1, rangeStart: 200, rangeEnd: 217, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 60, strip: 1, rangeStart: 220, rangeEnd: 237, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+
+            // Row 6 (Strip 5)
+            {number: 61, strip: 2, rangeStart: 0, rangeEnd: 17, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 62, strip: 2, rangeStart: 20, rangeEnd: 37, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 63, strip: 2, rangeStart: 40, rangeEnd: 57, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 64, strip: 2, rangeStart: 60, rangeEnd: 77, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 65, strip: 2, rangeStart: 80, rangeEnd: 97, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 66, strip: 2, rangeStart: 100, rangeEnd: 117, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 67, strip: 2, rangeStart: 120, rangeEnd: 137, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 68, strip: 2, rangeStart: 140, rangeEnd: 157, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 69, strip: 2, rangeStart: 160, rangeEnd: 177, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 70, strip: 2, rangeStart: 180, rangeEnd: 197, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 71, strip: 2, rangeStart: 200, rangeEnd: 217, color: defaultColor, brightness: defaultBrightness, ip:ip2},
+            {number: 72, strip: 2, rangeStart: 220, rangeEnd: 237, color: defaultColor, brightness: defaultBrightness, ip:ip2}
+        ];
+
+
+        async function updateBoxesWithLEDStatus() {
+            const status147 = await fetchLEDStatus(ip1);
+            const status148 = await fetchLEDStatus(ip2);
+        
+            boxes.forEach(box => {
+                const status = box.ip === ip1 ? status147 : status148;
+                if (status && status.strips && status.strips[box.strip]) {
+                    const ledStatus = status.strips[box.strip].leds[box.rangeStart];
+                    if (ledStatus) {
+                        box.color = { r: ledStatus.r, g: ledStatus.g, b: ledStatus.b };
+                        box.brightness = ledStatus.brightness;
+                    }
+                }
+            });
+        }
+
+        async function createGrid() {
+            await updateBoxesWithLEDStatus();
+            gridContainer.innerHTML = ''; // Clear existing content
+            for (let i = 0; i < boxes.length; i++) {
+                const box = boxes[i];
+                const boxElement = document.createElement('div');
+                boxElement.className = 'box';
+                boxElement.textContent = box.number;
+                boxElement.onclick = function() { toggleDropdown(this); };
+                
+                const dropdown = document.createElement('div');
+                dropdown.className = 'dropdown';
+                ['Building', 'Test', 'Active', 'Closed'].forEach(status => {
+                    const option = document.createElement('a');
+                    option.href = '#';
+                    option.textContent = status;
+                    option.onclick = function(e) { 
+                        e.stopPropagation();
+                        setBoxStatus(boxElement, status.toLowerCase(), i);
+                    };
+                    dropdown.appendChild(option);
+                });
+        
+                boxElement.appendChild(dropdown);
+                gridContainer.appendChild(boxElement);
+        
+                // Set color based on fetched LED status
+                const color = rgbToHex(box.color.r, box.color.g, box.color.b);
+                const status = getStatusFromColor(color);
+                setBoxStatus(boxElement, status, i);
+            }
+        }
+
+        function setBoxStatus(boxElement, status, boxIndex) {
+            const colors = {
+                'building': '#00FF00',
+                'test': '#FFFF00',
+                'active': '#FF0000',
+                'closed': '#000000'  // Black color for closed status
+            };
+            boxElement.style.backgroundColor = colors[status];
+            
+            const dropdown = boxElement.querySelector('.dropdown');
+            if (dropdown) {
+                dropdown.style.display = 'none';
+            }
+        
+            const box = boxes[boxIndex];
+            let ip = box.ip;
+            let strip = box.strip;
+        
+            apiUrl = `http://10.10.190.${ip}`;
+            setLEDRangeColor(strip, box.rangeStart, box.rangeEnd, colors[status]);
+        }
+
+        function toggleDropdown(box) {
+            const dropdown = box.querySelector('.dropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+
+        async function makeRequest(endpoint, params = {}) {
+            const url = new URL(endpoint, apiUrl);
+            Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const text = await response.text();
+                document.getElementById('status').textContent = text;
+            } catch (error) {
+                if (error.message.includes('CORS')) {
+                    document.getElementById('status').textContent = 'CORS error: The server needs to be configured to allow cross-origin requests.';
+                } else {
+                    document.getElementById('status').textContent = `Error: ${error.message}`;
+                }
+            }
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function setLEDRangeColor(strip, startLed, endLed, color, brightness) {
+            const rgb = hexToRgb(color);
+        
+            if (isNaN(startLed) || isNaN(endLed) || startLed > endLed || startLed < 0 || endLed >= 300) {
+                console.error("Invalid LED range");
+                return;
+            }
+        
+            // for (let i = startLed; i <= endLed; i++) {
+            //     makeRequest('/led/set', { id: i, r: rgb.r, g: rgb.g, b: rgb.b });
+            // }
+
+            makeRequest('/led/setLEDRange', {strip: strip, start: startLed, end:endLed, r: rgb.r, g: rgb.g, b: rgb.b, brightness:255})
+        
+            console.log(`Setting color ${color} for LEDs ${startLed} to ${endLed}`);
+        }
+
+        async function fetchLEDStatus(ip) {
+            try {
+                const response = await fetch(`${baseUrl}${ip}/led/status`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error(`Error fetching LED status from ${ip}:`, error);
+                return null;
+            }
+        }
+        
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+        
+        function getStatusFromColor(color) {
+            const colors = {
+                '#4CAF50': 'building',
+                '#FFFF00': 'test',
+                '#FF0000': 'active',
+                '#000000': 'closed'
+            };
+            return colors[color.toUpperCase()] || 'closed';
+        }
+
+        (async function() {
+            await createGrid();
+        
+            // Close dropdowns when clicking outside
+            window.onclick = function(event) {
+                if (!event.target.matches('.box')) {
+                    const dropdowns = document.getElementsByClassName("dropdown");
+                    for (let i = 0; i < dropdowns.length; i++) {
+                        dropdowns[i].style.display = "none";
+                    }
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
